@@ -5,6 +5,7 @@ import android.content.Context
 import android.support.v7.app.AppCompatDelegate
 import com.facebook.stetho.Stetho
 import com.github.moduth.blockcanary.BlockCanary
+import com.orhanobut.hawk.Hawk
 import com.squareup.leakcanary.LeakCanary
 import com.xiecc.seeWeather.BuildConfig
 import com.xiecc.seeWeather.component.CrashHandler
@@ -16,6 +17,8 @@ class BaseApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        Hawk.init(this).build()
+
         appContext = applicationContext
         CrashHandler.init(CrashHandler(applicationContext))
         if (!BuildConfig.DEBUG) {
@@ -53,10 +56,11 @@ class BaseApplication : Application() {
         var appContext: Context? = null
             private set
 
-        // TODO: 16/8/1 这里的夜间模式 UI 有些没有适配好 暂时放弃夜间模式
+        // TODO: 夜间模式修改
         init {
-            AppCompatDelegate.setDefaultNightMode(
-                    AppCompatDelegate.MODE_NIGHT_NO)
+            val mode = AppCompatDelegate.MODE_NIGHT_NO
+//            val mode = AppCompatDelegate.MODE_NIGHT_YES
+            AppCompatDelegate.setDefaultNightMode(mode)
         }
     }
 }

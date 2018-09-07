@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.Context
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -59,14 +60,21 @@ class MainFragment : BaseFragment() {
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        // 初始化view
         initView()
+        // 定位当前城市
+        locateCity()
+    }
+
+    // 定位当前城市
+    private fun locateCity() {
         RxPermissions(activity)
-                .request(Manifest.permission.ACCESS_COARSE_LOCATION)
+                .request(Manifest.permission.ACCESS_COARSE_LOCATION) // 定位权限申请
                 .doOnNext { o -> swiprefresh!!.isRefreshing = true }
                 .doOnNext { granted ->
-                    if (granted) {
+                    if (granted) { // 获得授权的话,使用定位城市
                         location()
-                    } else {
+                    } else { // 拒绝的话,使用本地记录城市
                         load()
                     }
                     VersionUtil.checkVersion(activity)
@@ -76,8 +84,8 @@ class MainFragment : BaseFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        RxBus.default
-                .toObservable(ChangeCityEvent::class.java)
+        // 城市切换的事件监听
+        RxBus.default.toObservable(ChangeCityEvent::class.java)
                 .observeOn(AndroidSchedulers.mainThread())
                 .filter { isVisible }
                 .doOnNext {
@@ -91,14 +99,14 @@ class MainFragment : BaseFragment() {
      * 初始化view
      */
     private fun initView() {
-        if (swiprefresh != null) {
-            swiprefresh!!.setColorSchemeResources(android.R.color.holo_blue_bright,
-                    android.R.color.holo_green_light,
-                    android.R.color.holo_orange_light,
-                    android.R.color.holo_red_light)
-            swiprefresh!!.setOnRefreshListener { swiprefresh!!.postDelayed({ this.load() }, 1000) }
-        }
+        // 刷新的动画效果
+        swiprefresh?.setColorSchemeResources(android.R.color.holo_blue_bright,
+                android.R.color.holo_green_light,
+                android.R.color.holo_orange_light,
+                android.R.color.holo_red_light)
+        swiprefresh?.setOnRefreshListener { swiprefresh?.postDelayed({ this.load() }, 1000) }
 
+        // 设置recyclerview
         recyclerview!!.layoutManager = LinearLayoutManager(activity)
         mAdapter = WeatherAdapter(mWeather)
         recyclerview!!.adapter = mAdapter
@@ -140,10 +148,11 @@ class MainFragment : BaseFragment() {
     }
 
     /**
-     * 从网络获取
+     * 从网络获取数据
      */
     private fun fetchDataByNetWork(): Observable<Weather> {
         val cityName = SharedPreferenceUtil.instance.cityName
+        Log.i("currentCity", "currentCity:$cityName")
         return RetrofitSingleton.instance
                 .fetchWeather(cityName)
                 .compose(RxUtil.fragmentLifecycle(this))
@@ -168,7 +177,8 @@ class MainFragment : BaseFragment() {
             if (aMapLocation != null) {
                 if (aMapLocation.errorCode == 0) {
                     aMapLocation.locationType
-                    SharedPreferenceUtil.instance.cityName = Util.replaceCity(aMapLocation.city)
+                    val locationCity = aMapLocation.city // 定位城市
+                    SharedPreferenceUtil.instance.cityName = Util.replaceCity(locationCity)
                 } else {
                     if (isAdded) {
                         ToastUtil.showShort(getString(R.string.errorLocation))

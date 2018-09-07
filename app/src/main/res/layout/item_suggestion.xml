@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/cardView"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -27,7 +28,7 @@
                 android:layout_gravity="center_vertical"
                 android:layout_width="32dp"
                 android:layout_height="32dp"
-                android:src="@drawable/icon_cloth"/>
+                app:srcCompat="@drawable/icon_cloth"/>
 
             <LinearLayout
                 android:layout_marginStart="64dp"
@@ -61,7 +62,7 @@
                 android:layout_gravity="center_vertical"
                 android:layout_width="32dp"
                 android:layout_height="32dp"
-                android:src="@drawable/icon_sport"/>
+                app:srcCompat="@drawable/icon_sport"/>
 
             <LinearLayout
                 android:layout_marginStart="64dp"
@@ -96,7 +97,7 @@
                 android:layout_gravity="center_vertical"
                 android:layout_width="32dp"
                 android:layout_height="32dp"
-                android:src="@drawable/icon_travel"/>
+                app:srcCompat="@drawable/icon_travel"/>
 
             <LinearLayout
                 android:layout_marginStart="64dp"
@@ -131,7 +132,7 @@
                 android:layout_gravity="center_vertical"
                 android:layout_width="32dp"
                 android:layout_height="32dp"
-                android:src="@drawable/icon_flu"/>
+                app:srcCompat="@drawable/icon_flu"/>
 
             <LinearLayout
                 android:layout_marginStart="64dp"

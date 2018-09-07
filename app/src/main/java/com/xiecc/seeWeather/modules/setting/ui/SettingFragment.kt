@@ -94,8 +94,9 @@ class SettingFragment : PreferenceFragment(), Preference.OnPreferenceClickListen
     }
 
     private fun showIconDialog() {
-        val inflater = activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-        val dialogLayout = inflater.inflate(R.layout.dialog_icon, activity.findViewById<View>(R.id.dialog_root) as ViewGroup)
+        val inflater = activity?.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+        val viewGroup = activity?.findViewById<View>(R.id.dialog_root) as ViewGroup?
+        val dialogLayout = inflater.inflate(R.layout.dialog_icon, viewGroup)
         val builder = AlertDialog.Builder(activity).setView(dialogLayout)
         val alertDialog = builder.create()
 

@@ -55,10 +55,16 @@ class AutoUpdateService : Service() {
         }
     }
 
+    /**
+     * 停止后台进程服务
+     */
     override fun stopService(name: Intent): Boolean {
         return super.stopService(name)
     }
 
+    /**
+     * 获取天气数据
+     */
     private fun fetchDataByNetWork() {
         val cityName = SharedPreferenceUtil.instance.cityName
         RetrofitSingleton.instance

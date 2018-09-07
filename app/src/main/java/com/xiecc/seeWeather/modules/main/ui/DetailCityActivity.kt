@@ -41,6 +41,9 @@ class DetailCityActivity : ToolbarActivity() {
         initViewWithData()
     }
 
+    /**
+     * 初始化数据以及view
+     */
     private fun initViewWithData() {
         val intent = intent
         val weather = intent.getSerializableExtra(IntentKey.WEATHER) as Weather?

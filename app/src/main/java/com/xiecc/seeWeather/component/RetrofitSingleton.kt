@@ -57,7 +57,7 @@ class RetrofitSingleton private constructor() {
                     }
                     Observable.just<WeatherAPI>(weather)
                 }
-                .map<Weather> { weather -> weather.mWeathers.get(0) }
+                .map { weather -> weather.mWeathers[0] }
                 .doOnError { disposeFailureInfo(it) }
                 .compose(RxUtil.io())
     }

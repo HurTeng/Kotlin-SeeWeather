@@ -17,8 +17,8 @@ import com.xiecc.seeWeather.common.Irrelevant
 import com.xiecc.seeWeather.common.utils.RxUtil
 import com.xiecc.seeWeather.common.utils.SharedPreferenceUtil
 import com.xiecc.seeWeather.common.utils.Util
-import com.xiecc.seeWeather.component.OrmLite
 import com.xiecc.seeWeather.component.RxBus
+import com.xiecc.seeWeather.component.SPUtil
 import com.xiecc.seeWeather.modules.city.adapter.CityAdapter
 import com.xiecc.seeWeather.modules.city.db.DBManager
 import com.xiecc.seeWeather.modules.city.db.WeatherDB
@@ -47,6 +47,7 @@ class ChoiceCityActivity : ToolbarActivity() {
     private var cityList: List<City>? = null
     private var mAdapter: CityAdapter? = null
     private var currentLevel: Int = 0
+
 
     private var isChecked = false
 
@@ -119,16 +120,18 @@ class ChoiceCityActivity : ToolbarActivity() {
 
     // 点击事件处理
     fun onItemClick(pos: Int) {
-        if (currentLevel == LEVEL_PROVINCE) {
+        if (currentLevel == LEVEL_PROVINCE) { // 省份点击事件
             selectedProvince = provincesList[pos]
             mRecyclerView!!.smoothScrollToPosition(0)
-            queryCities()
+            queryCities() // 查询次级城市
         } else if (currentLevel == LEVEL_CITY) {
-            val city = Util.replaceCity(cityList!![pos].mCityName)
-            if (isChecked) {
-                OrmLite.instance?.save(CityORM(city))
+            val cityName = cityList!![pos].mCityName // 获取城市名
+            val city = Util.replaceCity(cityName) // 替换城市名
+            if (isChecked) {  // 已经在选中列表中的,post更新信息
+//                OrmLite.instance?.save(CityORM(city))
+                SPUtil.addConcernedCity(CityORM(city))
                 RxBus.default.post(MultiUpdateEvent())
-            } else {
+            } else { // 修改当前城市
                 SharedPreferenceUtil.instance.cityName = city
                 RxBus.default.post(ChangeCityEvent())
             }
@@ -143,7 +146,9 @@ class ChoiceCityActivity : ToolbarActivity() {
         toolbar?.title = "选择省份"
         val flowable = FlowableOnSubscribe<String> { emitter ->
             if (provincesList.isEmpty()) {
-                provincesList.addAll(WeatherDB.loadProvinces(DBManager.getInstance().database))
+                val database = DBManager.getInstance().database
+                val provinces = WeatherDB.loadProvinces(database) // 省份列表
+                provincesList.addAll(provinces)
             }
             dataList.clear()
             for (province in provincesList) {
@@ -190,7 +195,9 @@ class ChoiceCityActivity : ToolbarActivity() {
         mAdapter!!.notifyDataSetChanged()
 
         val flowable: FlowableOnSubscribe<String> = FlowableOnSubscribe { emitter ->
-            cityList = WeatherDB.loadCities(DBManager.getInstance().database, selectedProvince!!.mProSort)
+            val database = DBManager.getInstance().database // 数据表
+            val proSort = selectedProvince!!.mProSort // 排序方式
+            cityList = WeatherDB.loadCities(database, proSort)
             for (city in cityList!!) {
                 emitter.onNext(city.mCityName)
             }

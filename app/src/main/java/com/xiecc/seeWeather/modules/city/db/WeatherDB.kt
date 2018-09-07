@@ -13,6 +13,9 @@ import java.util.*
 class WeatherDB {
     companion object {
 
+        /**
+         * 加载省份数据
+         */
         fun loadProvinces(db: SQLiteDatabase): List<Province> {
 
             val list = ArrayList<Province>()
@@ -31,6 +34,9 @@ class WeatherDB {
             return list
         }
 
+        /**
+         * 加载城市数据
+         */
         fun loadCities(db: SQLiteDatabase, ProID: Int): List<City> {
             val list = ArrayList<City>()
             val cursor = db.query("T_City", null, "ProID = ?", arrayOf(ProID.toString()), null, null, null)

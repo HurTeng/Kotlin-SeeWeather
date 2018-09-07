@@ -13,21 +13,9 @@ import com.xiecc.seeWeather.common.C
  * Info:
  */
 class OrmLite private constructor() {
-
-    init {
-        if (sLiteOrm == null) {
-            sLiteOrm = LiteOrm.newSingleInstance(BaseApplication.appContext, C.ORM_NAME)
-        }
-        sLiteOrm!!.setDebugged(BuildConfig.DEBUG)
-    }
-
-    private object OrmHolder {
-        val sInstance = OrmLite()
-    }
-
     companion object {
 
-        internal var sLiteOrm: LiteOrm? = null
+        var sLiteOrm: LiteOrm? = null
 
         val instance: LiteOrm?
             get() {
@@ -38,4 +26,16 @@ class OrmLite private constructor() {
         private val ormHolder: OrmLite
             get() = OrmHolder.sInstance
     }
+
+    init {
+        if (sLiteOrm == null) {
+            sLiteOrm = LiteOrm.newSingleInstance(BaseApplication.appContext, C.ORM_NAME)
+        }
+        sLiteOrm?.setDebugged(BuildConfig.DEBUG)
+    }
+
+    private object OrmHolder {
+        val sInstance = OrmLite()
+    }
+
 }

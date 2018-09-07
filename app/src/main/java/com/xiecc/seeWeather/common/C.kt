@@ -23,4 +23,7 @@ object C {
     val UNKNOWN_CITY = "unknown city"
 
     val NET_CACHE = BaseApplication.appCacheDir + File.separator + "NetCache"
+
+    val CONCERNED_CITYS = "concerned_citys" // 关注的城市
+    val CURRENT_CITY = "current_city" // 当前城市
 }
