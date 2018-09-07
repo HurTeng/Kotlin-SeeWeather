@@ -70,7 +70,6 @@
             android:name=".modules.main.ui.DetailCityActivity"
             android:screenOrientation="portrait"/>
 
-        <service android:name="com.hugo.watcher.WatcherService"/>
     </application>
 
 </manifest>

@@ -7,7 +7,7 @@
     android:layout_margin="@dimen/cardview_margin"
     android:clickable="true"
     android:foreground="?android:attr/selectableItemBackground"
-    card_view:cardCornerRadius="2dp"
+    card_view:cardCornerRadius="@dimen/cardCornerRadius"
     card_view:cardElevation="1dp">
 
     <include layout="@layout/dialog_weather"/>

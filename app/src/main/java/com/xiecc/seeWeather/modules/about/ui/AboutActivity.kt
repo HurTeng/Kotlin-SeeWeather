@@ -5,14 +5,13 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.MenuItem
-import android.view.View
-import butterknife.OnClick
 import com.xiecc.seeWeather.R
 import com.xiecc.seeWeather.base.BaseActivity
 import com.xiecc.seeWeather.common.utils.StatusBarUtil
 import com.xiecc.seeWeather.common.utils.Util
 import com.xiecc.seeWeather.common.utils.VersionUtil
 import kotlinx.android.synthetic.main.activity_about.*
+import kotlinx.android.synthetic.main.part_about.*
 
 class AboutActivity : BaseActivity() {
 
@@ -34,6 +33,8 @@ class AboutActivity : BaseActivity() {
         tv_version!!.text = String.format("当前版本: %s (Build %s)", VersionUtil.getVersion(this), VersionUtil.getVersionCode(this))
         toolbar_layout!!.isTitleEnabled = false
         toolbar!!.title = getString(R.string.app_name)
+
+        initEvent()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -45,22 +46,25 @@ class AboutActivity : BaseActivity() {
         }
     }
 
-    @OnClick(R.id.bt_code, R.id.bt_blog, R.id.bt_pay, R.id.bt_share, R.id.bt_bug, R.id.bt_update)
-    fun onClick(view: View) {
-        when (view.id) {
-            R.id.bt_code -> goToHtml(getString(R.string.app_html))
-            R.id.bt_blog -> goToHtml("http://imxie.itscoder.com")
-            R.id.bt_pay -> Util.copyToClipboard(getString(R.string.alipay), this)
-            R.id.bt_share -> {
-                val sharingIntent = Intent(Intent.ACTION_SEND)
-                sharingIntent.type = "text/plain"
-                sharingIntent.putExtra(Intent.EXTRA_SUBJECT, "Subject Here")
-                sharingIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.share_txt))
-                startActivity(Intent.createChooser(sharingIntent, getString(R.string.share_app)))
-            }
-            R.id.bt_bug -> goToHtml(getString(R.string.bugTableUrl))
-            R.id.bt_update -> VersionUtil.checkVersion(this, true)
+    /**
+     * 初始化点击事件
+     */
+    fun initEvent() {
+        bt_code.setOnClickListener({goToHtml(getString(R.string.app_html))})
+        bt_blog.setOnClickListener({ goToHtml("http://imxie.itscoder.com") })
+        bt_pay.setOnClickListener { Util.copyToClipboard(getString(R.string.alipay), this) }
+        bt_share.setOnClickListener {
+            val sharingIntent = Intent(Intent.ACTION_SEND)
+            sharingIntent.type = "text/plain"
+            sharingIntent.putExtra(Intent.EXTRA_SUBJECT, "Subject Here")
+            sharingIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.share_txt))
+            startActivity(Intent.createChooser(sharingIntent, getString(R.string.share_app)))
         }
+
+        bt_bug.setOnClickListener {
+            goToHtml(getString(R.string.bugTableUrl))
+        }
+        bt_update.setOnClickListener { VersionUtil.checkVersion(this, true) }
     }
 
     private fun goToHtml(url: String) {

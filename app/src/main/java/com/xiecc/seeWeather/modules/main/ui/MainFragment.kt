@@ -7,7 +7,6 @@ import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import butterknife.ButterKnife
 import com.amap.api.location.AMapLocationClient
 import com.amap.api.location.AMapLocationClientOption
 import com.tbruyelle.rxpermissions2.RxPermissions
@@ -53,7 +52,6 @@ class MainFragment : BaseFragment() {
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         if (view == null) {
             view = inflater!!.inflate(R.layout.content_main, container, false)
-            ButterKnife.bind(this, view!!)
         }
         mIsCreateView = true
         return view
@@ -81,14 +79,17 @@ class MainFragment : BaseFragment() {
         RxBus.default
                 .toObservable(ChangeCityEvent::class.java)
                 .observeOn(AndroidSchedulers.mainThread())
-                .filter { event -> isVisible }
-                .doOnNext { event ->
+                .filter { isVisible }
+                .doOnNext {
                     swiprefresh!!.isRefreshing = true
                     load()
                 }
                 .subscribe()
     }
 
+    /**
+     * 初始化view
+     */
     private fun initView() {
         if (swiprefresh != null) {
             swiprefresh!!.setColorSchemeResources(android.R.color.holo_blue_bright,
@@ -103,10 +104,13 @@ class MainFragment : BaseFragment() {
         recyclerview!!.adapter = mAdapter
     }
 
+    /**
+     * 加载数据
+     */
     private fun load() {
         fetchDataByNetWork()
-                .doOnSubscribe { aLong -> swiprefresh!!.isRefreshing = true }
-                .doOnError { throwable ->
+                .doOnSubscribe { swiprefresh!!.isRefreshing = true }
+                .doOnError {
                     iv_erro!!.visibility = View.VISIBLE
                     recyclerview!!.visibility = View.GONE
                     SharedPreferenceUtil.instance.cityName = "北京"
@@ -189,7 +193,6 @@ class MainFragment : BaseFragment() {
     }
 
     companion object {
-
         private val mWeather = Weather()
     }
 }

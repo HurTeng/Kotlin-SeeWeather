@@ -52,12 +52,16 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     private fun initView() {
         setSupportActionBar(toolbar)
         fab?.setOnClickListener { _ -> showShareDialog() }
-        val mAdapter = HomePagerAdapter(supportFragmentManager)
-        mMainFragment = MainFragment()
-        mMultiCityFragment = MultiCityFragment()
-        mAdapter.addTab(mMainFragment!!, "主页面")
-        mAdapter.addTab(mMultiCityFragment!!, "多城市")
-        viewPager?.adapter = mAdapter
+
+        // 设置viewPager
+        setupViewPager()
+    }
+
+    /**
+     * 设置viewPager
+     */
+    private fun setupViewPager() {
+        viewPager?.adapter = setupAdapter() // 设置适配器
         val fabVisibilityChangedListener = FabVisibilityChangedListener()
         tabLayout?.setupWithViewPager(viewPager, false)
         viewPager?.addOnPageChangeListener(object : ViewPager.SimpleOnPageChangeListener() {
@@ -71,6 +75,18 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                 }
             }
         })
+    }
+
+    /**
+     * 设置适配器
+     */
+    private fun setupAdapter(): HomePagerAdapter {
+        val mAdapter = HomePagerAdapter(supportFragmentManager)
+        mMainFragment = MainFragment()
+        mMultiCityFragment = MultiCityFragment()
+        mAdapter.addTab(mMainFragment!!, "主页面")
+        mAdapter.addTab(mMultiCityFragment!!, "多城市")
+        return mAdapter
     }
 
     // fab按钮状态监听器
@@ -134,9 +150,12 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         }
     }
 
+    /**
+     * 菜单选择事件
+     */
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         RxDrawer.close(drawer_layout)
-                .doOnNext { o ->
+                .doOnNext {
                     when (item.itemId) {
                         R.id.nav_set -> SettingActivity.launch(this@MainActivity)
                         R.id.nav_about -> AboutActivity.launch(this@MainActivity)
@@ -148,19 +167,22 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         return false
     }
 
+    /**
+     * 更改Fab状态
+     */
     private fun changeFabState(position: Int) {
         if (position == 1) {
-            fab!!.setImageResource(R.drawable.ic_add_24dp)
-            fab!!.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(this@MainActivity, R.color.colorPrimary))
-            fab!!.setOnClickListener { v ->
+            fab?.setImageResource(R.drawable.ic_add_24dp)
+            fab?.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(this@MainActivity, R.color.colorPrimary))
+            fab?.setOnClickListener {
                 val intent = Intent(this@MainActivity, ChoiceCityActivity::class.java)
                 intent.putExtra(C.MULTI_CHECK, true)
                 CircularAnimUtil.startActivity(this@MainActivity, intent, fab, R.color.colorPrimary)
             }
         } else {
-            fab!!.setImageResource(R.drawable.ic_favorite)
-            fab!!.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(this@MainActivity, R.color.colorAccent))
-            fab!!.setOnClickListener { v -> showShareDialog() }
+            fab?.setImageResource(R.drawable.ic_favorite)
+            fab?.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(this@MainActivity, R.color.colorAccent))
+            fab?.setOnClickListener { showShareDialog() }
         }
     }
 

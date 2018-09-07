@@ -33,6 +33,9 @@ import io.reactivex.FlowableOnSubscribe
 import io.reactivex.Observable
 import java.util.*
 
+/**
+ * 城市选择页面
+ */
 class ChoiceCityActivity : ToolbarActivity() {
 
     private var mRecyclerView: RecyclerView? = null
@@ -51,10 +54,28 @@ class ChoiceCityActivity : ToolbarActivity() {
         return true
     }
 
+    override fun layoutId(): Int {
+        return R.layout.activity_choice_city
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // 初始化控件
         initView()
+        // 获取数据
+        obtainData()
+        // 显示提示信息
+        isChecked = intent.getBooleanExtra(C.MULTI_CHECK, false)
+        val isTips = SharedPreferenceUtil.instance.getBoolean("Tips", true)
+        if (isChecked && isTips) {
+            showTips()
+        }
+    }
 
+    /**
+     * 获取城市数据
+     */
+    private fun obtainData() {
         Observable.create<Any> { emitter ->
             DBManager.getInstance().openDatabase()
             emitter.onNext(Irrelevant.INSTANCE)
@@ -67,31 +88,26 @@ class ChoiceCityActivity : ToolbarActivity() {
                     queryProvinces()
                 }
                 .subscribe()
-
-        val intent = intent
-        isChecked = intent.getBooleanExtra(C.MULTI_CHECK, false)
-        if (isChecked && SharedPreferenceUtil.instance.getBoolean("Tips", true)) {
-            showTips()
-        }
     }
 
-    override fun layoutId(): Int {
-        return R.layout.activity_choice_city
-    }
 
+    /**
+     * 初始化view
+     */
     private fun initView() {
         mRecyclerView = findViewById(R.id.recyclerview) as RecyclerView
         mProgressBar = findViewById(R.id.progressBar) as ProgressBar
-        if (mProgressBar != null) {
-            mProgressBar!!.visibility = View.VISIBLE
-        }
+        mProgressBar?.visibility = View.VISIBLE
     }
 
+    /**
+     * 初始化RecyclerView
+     */
     private fun initRecyclerView() {
-        mRecyclerView!!.layoutManager = LinearLayoutManager(this)
-        mRecyclerView!!.setHasFixedSize(true)
+        mRecyclerView?.layoutManager = LinearLayoutManager(this)
+        mRecyclerView?.setHasFixedSize(true)
         mAdapter = CityAdapter(this, dataList)
-        mRecyclerView!!.adapter = mAdapter
+        mRecyclerView?.adapter = mAdapter
 
         // 设置点击事件
         mAdapter?.setOnItemClickListener(object : CityAdapter.OnRecyclerViewItemClickListener {
@@ -154,6 +170,9 @@ class ChoiceCityActivity : ToolbarActivity() {
         return true
     }
 
+    /**
+     * 选中的处理
+     */
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.multi_check) {
             item.isChecked = !isChecked

@@ -5,7 +5,6 @@ import android.content.Context
 import android.support.v7.app.AppCompatDelegate
 import com.facebook.stetho.Stetho
 import com.github.moduth.blockcanary.BlockCanary
-import com.hugo.watcher.Watcher
 import com.squareup.leakcanary.LeakCanary
 import com.xiecc.seeWeather.BuildConfig
 import com.xiecc.seeWeather.component.CrashHandler
@@ -22,7 +21,6 @@ class BaseApplication : Application() {
         if (!BuildConfig.DEBUG) {
             FIR.init(this)
         } else {
-            Watcher.getInstance().start(this)
             Stetho.initializeWithDefaults(this)
         }
         BlockCanary.install(this, AppBlockCanaryContext()).start()

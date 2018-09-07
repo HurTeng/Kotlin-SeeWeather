@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import butterknife.BindView
 import com.xiecc.seeWeather.R
 import com.xiecc.seeWeather.base.BaseViewHolder
 import com.xiecc.seeWeather.component.AnimRecyclerViewAdapter
@@ -16,11 +15,11 @@ class CityAdapter(private val mContext: Context, private val mDataList: ArrayLis
     private var mOnItemClickListener: OnRecyclerViewItemClickListener? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CityViewHolder? {
-        return CityViewHolder(LayoutInflater.from(mContext).inflate(R.layout.item_city, parent, false))
+        val view = LayoutInflater.from(mContext).inflate(R.layout.item_city, parent, false)
+        return CityViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: CityViewHolder, position: Int) {
-
         holder.bind(mDataList[position])
         holder.mCardView?.setOnClickListener { v -> mOnItemClickListener?.onItemClick(v, position) }
     }
@@ -39,10 +38,8 @@ class CityAdapter(private val mContext: Context, private val mDataList: ArrayLis
 
     inner class CityViewHolder(itemView: View) : BaseViewHolder<String>(itemView) {
 
-        @BindView(R.id.item_city)
-        var mItemCity: TextView? = null
-        @BindView(R.id.cardView)
-        var mCardView: CardView? = null
+        var mItemCity: TextView? = itemView.findViewById(R.id.item_city)
+        var mCardView: CardView? = itemView.findViewById(R.id.cardView)
 
         public override fun bind(s: String) {
             mItemCity?.text = s

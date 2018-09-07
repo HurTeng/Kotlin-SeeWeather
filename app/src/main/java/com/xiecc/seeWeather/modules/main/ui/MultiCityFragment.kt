@@ -7,7 +7,6 @@ import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import butterknife.ButterKnife
 import com.litesuits.orm.db.assit.WhereBuilder
 import com.xiecc.seeWeather.R
 import com.xiecc.seeWeather.base.BaseFragment
@@ -50,7 +49,6 @@ class MultiCityFragment : BaseFragment() {
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         if (view == null) {
             view = inflater!!.inflate(R.layout.fragment_multicity, container, false)
-            ButterKnife.bind(this, view!!)
         }
         return view
     }

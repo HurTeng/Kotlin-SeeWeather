@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
-import butterknife.BindView
 import com.xiecc.seeWeather.R
 import com.xiecc.seeWeather.base.BaseViewHolder
 import com.xiecc.seeWeather.common.utils.SharedPreferenceUtil
@@ -76,50 +75,51 @@ class WeatherAdapter(private val mWeatherData: Weather) : AnimRecyclerViewAdapte
      */
     internal inner class NowWeatherViewHolder(itemView: View) : BaseViewHolder<Weather>(itemView) {
 
-        @BindView(R.id.weather_icon)
-        var weatherIcon: ImageView? = null
-        @BindView(R.id.temp_flu)
-        var tempFlu: TextView? = null
-        @BindView(R.id.temp_max)
-        var tempMax: TextView? = null
-        @BindView(R.id.temp_min)
-        var tempMin: TextView? = null
-        @BindView(R.id.temp_pm)
-        var tempPm: TextView? = null
-        @BindView(R.id.temp_quality)
-        var tempQuality: TextView? = null
+        var weatherIcon: ImageView? = itemView.findViewById(R.id.weather_icon)
+        var tempFlu: TextView? = itemView.findViewById(R.id.temp_flu)
+        var tempMax: TextView? = itemView.findViewById(R.id.temp_max)
+        var tempMin: TextView? = itemView.findViewById(R.id.temp_min)
+        var tempPm: TextView? = itemView.findViewById(R.id.temp_pm)
+        var tempQuality: TextView? = itemView.findViewById(R.id.temp_quality)
 
         public override fun bind(weather: Weather) {
             try {
-                tempFlu!!.text = String.format("%s℃", weather.now!!.tmp)
-                tempMax!!.text = String.format("↑ %s ℃", weather.dailyForecast!![0].tmp!!.max)
-                tempMin!!.text = String.format("↓ %s ℃", weather.dailyForecast!![0].tmp!!.min)
+                val now = weather.now // 当前天气
+                val city = weather.aqi?.city!! // 当前城市
+                val tmp = weather.dailyForecast!![0].tmp!! // 当前温度范围
 
-                tempPm!!.text = String.format("PM2.5: %s μg/m³", Util.safeText(weather.aqi!!.city!!.pm25!!))
-                tempQuality!!.text = String.format("空气质量：%s", Util.safeText(weather.aqi!!.city!!.qlty!!))
+                // 设置信息
+                tempFlu?.text = String.format("%s℃", now?.tmp) // 当前温度
+                tempMax?.text = String.format("↑ %s ℃", tmp.max) // 最高温度
+                tempMin?.text = String.format("↓ %s ℃", tmp.min) // 最低温度
+                tempPm?.text = String.format("PM2.5: %s μg/m³", Util.safeText(city.pm25!!))
+                tempQuality?.text = String.format("空气质量：%s", Util.safeText(city.qlty!!))
+
+                // 设置天气图片
                 ImageLoader.load(itemView.context,
-                        SharedPreferenceUtil.instance.getInt(weather.now!!.cond!!.txt!!, R.mipmap.none),
+                        SharedPreferenceUtil.instance.getInt(now?.cond!!.txt!!, R.mipmap.none),
                         weatherIcon!!)
             } catch (e: Exception) {
-                PLog.e(TAG, e.toString())
+                PLog.e(e.toString())
             }
-
         }
+
     }
 
     /**
      * 当日小时预告
      */
     private inner class HoursWeatherViewHolder internal constructor(itemView: View) : BaseViewHolder<Weather>(itemView) {
+        private val dataSize = mWeatherData.hourlyForecast!!.size // 数据列表size
         private val itemHourInfoLayout: LinearLayout = itemView.findViewById<View>(R.id.item_hour_info_linearlayout) as LinearLayout
-        private val mClock = arrayOfNulls<TextView>(mWeatherData.hourlyForecast!!.size)
-        private val mTemp = arrayOfNulls<TextView>(mWeatherData.hourlyForecast!!.size)
-        private val mHumidity = arrayOfNulls<TextView>(mWeatherData.hourlyForecast!!.size)
-        private val mWind = arrayOfNulls<TextView>(mWeatherData.hourlyForecast!!.size)
+        private val mClock = arrayOfNulls<TextView>(dataSize)
+        private val mTemp = arrayOfNulls<TextView>(dataSize)
+        private val mHumidity = arrayOfNulls<TextView>(dataSize)
+        private val mWind = arrayOfNulls<TextView>(dataSize)
 
         init {
 
-            for (i in 0 until mWeatherData.hourlyForecast!!.size) {
+            for (i in 0 until dataSize) {
                 val view = View.inflate(mContext, R.layout.item_hour_info_line, null)
                 mClock[i] = view.findViewById<View>(R.id.one_clock) as TextView
                 mTemp[i] = view.findViewById<View>(R.id.one_temp) as TextView
@@ -130,21 +130,21 @@ class WeatherAdapter(private val mWeatherData: Weather) : AnimRecyclerViewAdapte
         }
 
         public override fun bind(weather: Weather) {
-
             try {
-                for (i in 0 until weather.hourlyForecast!!.size) {
+                val hourlyForecast = weather.hourlyForecast!! // 每小时的天气预测
+                for (i in 0 until hourlyForecast.size) {
                     //s.subString(s.length-3,s.length);
                     //第一个参数是开始截取的位置，第二个是结束位置。
-                    val mDate = weather.hourlyForecast!![i].date
-                    mClock[i]?.text = mDate!!.substring(mDate.length - 5, mDate.length)
-                    mTemp[i]?.text = String.format("%s℃", weather.hourlyForecast!![i].tmp)
-                    mHumidity[i]?.text = String.format("%s%%", weather.hourlyForecast!![i].hum)
-                    mWind[i]?.text = String.format("%sKm/h", weather.hourlyForecast!![i].wind!!.spd)
+                    val forecastEntity = hourlyForecast[i] // 天气预测
+                    val mDate = forecastEntity.date
+                    mClock[i]?.text = mDate?.substring(mDate.length - 5, mDate.length)
+                    mTemp[i]?.text = String.format("%s℃", forecastEntity.tmp)
+                    mHumidity[i]?.text = String.format("%s%%", forecastEntity.hum)
+                    mWind[i]?.text = String.format("%sKm/h", forecastEntity.wind!!.spd)
                 }
             } catch (e: Exception) {
                 PLog.e(e.toString())
             }
-
         }
     }
 
@@ -152,36 +152,33 @@ class WeatherAdapter(private val mWeatherData: Weather) : AnimRecyclerViewAdapte
      * 当日建议
      */
     internal inner class SuggestionViewHolder(itemView: View) : BaseViewHolder<Weather>(itemView) {
-        @BindView(R.id.cloth_brief)
-        var clothBrief: TextView? = null
-        @BindView(R.id.cloth_txt)
-        var clothTxt: TextView? = null
-        @BindView(R.id.sport_brief)
-        var sportBrief: TextView? = null
-        @BindView(R.id.sport_txt)
-        var sportTxt: TextView? = null
-        @BindView(R.id.travel_brief)
-        var travelBrief: TextView? = null
-        @BindView(R.id.travel_txt)
-        var travelTxt: TextView? = null
-        @BindView(R.id.flu_brief)
-        var fluBrief: TextView? = null
-        @BindView(R.id.flu_txt)
-        var fluTxt: TextView? = null
+        var clothBrief: TextView? = itemView.findViewById(R.id.cloth_brief)
+        var clothTxt: TextView? = itemView.findViewById(R.id.cloth_txt)
+        var sportBrief: TextView? = itemView.findViewById(R.id.sport_brief)
+        var sportTxt: TextView? = itemView.findViewById(R.id.sport_txt)
+        var travelBrief: TextView? = itemView.findViewById(R.id.travel_brief)
+        var travelTxt: TextView? = itemView.findViewById(R.id.travel_txt)
+        var fluBrief: TextView? = itemView.findViewById(R.id.flu_brief)
+        var fluTxt: TextView? = itemView.findViewById(R.id.flu_txt)
 
         public override fun bind(weather: Weather) {
             try {
-                clothBrief!!.text = String.format("穿衣指数---%s", weather.suggestion!!.drsg!!.brf)
-                clothTxt!!.text = weather.suggestion!!.drsg!!.txt
+                val suggestion = weather.suggestion
+                val drsg = suggestion?.drsg
+                clothBrief?.text = String.format("穿衣指数---%s", drsg?.brf)
+                clothTxt?.text = drsg?.txt
 
-                sportBrief!!.text = String.format("运动指数---%s", weather.suggestion!!.sport!!.brf)
-                sportTxt!!.text = weather.suggestion!!.sport!!.txt
+                val sport = suggestion?.sport
+                sportBrief?.text = String.format("运动指数---%s", sport?.brf)
+                sportTxt?.text = sport?.txt
 
-                travelBrief!!.text = String.format("旅游指数---%s", weather.suggestion!!.trav!!.brf)
-                travelTxt!!.text = weather.suggestion!!.trav!!.txt
+                val trav = suggestion?.trav
+                travelBrief?.text = String.format("旅游指数---%s", trav?.brf)
+                travelTxt?.text = trav?.txt
 
-                fluBrief!!.text = String.format("感冒指数---%s", weather.suggestion!!.flu!!.brf)
-                fluTxt!!.text = weather.suggestion!!.flu!!.txt
+                val flu = suggestion?.flu
+                fluBrief?.text = String.format("感冒指数---%s", flu?.brf)
+                fluTxt?.text = flu?.txt
             } catch (e: Exception) {
                 PLog.e(e.toString())
             }

@@ -18,9 +18,7 @@ import android.widget.LinearLayout
 import android.widget.RadioButton
 import android.widget.SeekBar
 import android.widget.TextView
-import com.hugo.watcher.Watcher
 import com.xiecc.seeWeather.R
-import com.xiecc.seeWeather.base.BaseApplication
 import com.xiecc.seeWeather.common.C
 import com.xiecc.seeWeather.common.utils.FileSizeUtil
 import com.xiecc.seeWeather.common.utils.FileUtil
@@ -91,10 +89,6 @@ class SettingFragment : PreferenceFragment(), Preference.OnPreferenceClickListen
                     .subscribe()
         } else if (mChangeUpdate === preference) {
             showUpdateDialog()
-        } else if (mWatcherSwitch === preference) {
-            if (mWatcherSwitch!!.isChecked) {
-                Watcher.getInstance().start(BaseApplication.appContext)
-            }
         }
         return true
     }

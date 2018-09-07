@@ -10,7 +10,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import butterknife.BindView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.animation.GlideAnimation
 import com.bumptech.glide.request.target.SimpleTarget
@@ -53,14 +52,10 @@ class MultiCityAdapter(private val mWeatherList: List<Weather>) : RecyclerView.A
 
     inner class MultiCityViewHolder(itemView: View) : BaseViewHolder<Weather>(itemView) {
 
-        @BindView(R.id.dialog_city)
-        var mDialogCity: TextView? = null
-        @BindView(R.id.dialog_icon)
-        var mDialogIcon: ImageView? = null
-        @BindView(R.id.dialog_temp)
-        var mDialogTemp: TextView? = null
-        @BindView(R.id.cardView)
-        var mCardView: CardView? = null
+        var mDialogCity: TextView? = itemView.findViewById(R.id.dialog_city)
+        var mDialogIcon: ImageView? = itemView.findViewById(R.id.dialog_icon)
+        var mDialogTemp: TextView? = itemView.findViewById(R.id.dialog_temp)
+        var mCardView: CardView? = itemView.findViewById(R.id.cardView)
 
         public override fun bind(weather: Weather) {
 

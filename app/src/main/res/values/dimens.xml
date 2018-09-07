@@ -12,5 +12,6 @@
 
     <dimen name="recyclerview_item">0dp</dimen>
     <dimen name="cardview_margin">8dp</dimen>
+    <dimen name="cardCornerRadius">5dp</dimen>
 
 </resources>
